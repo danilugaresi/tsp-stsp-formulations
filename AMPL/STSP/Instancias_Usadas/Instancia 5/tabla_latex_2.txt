@@ -1,0 +1,2 @@
+Formulación & \textit{Lower Bound} de la relajación & Fuerza teórica \\ 
+STSP-SCF &  $ 91.00$ & débil \\ 

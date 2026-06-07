@@ -1,0 +1,4 @@
+Formulación & \textit{Lower Bound} de la relajación & Fuerza teórica \\ 
+STSP-SCF &  $ 87.50$ & débil \\ 
+STSP-TS &  $ 85.45$ & intermedia \\ 
+STSP-F &  $105.00$ & fuerte \\ 

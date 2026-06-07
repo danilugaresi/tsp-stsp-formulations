@@ -1,0 +1,5 @@
+Formulación & \textit{Lower Bound} de la relajación & Fuerza teórica \\ 
+TSP-SCF &  $161.61$ & intermedia \\ 
+TSP-MCF &  $163.76$ & intermedia \\ 
+TSP-TS &  $163.76$ & intermedia \\ 
+TSP-DFJ &  $163.76$ & intermedia \\ 

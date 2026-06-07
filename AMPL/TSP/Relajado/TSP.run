@@ -1,0 +1,481 @@
+# Trabajo 2 --- Optimización Aplicada (Primera Parte)
+# Archivo .run general para el problema TSP
+# Autores: Daniel Lugaresi Palomares, Iker Rodríguez Rodríguez
+
+# Se incluyen las cuatro formulaciones estudiadas y sus versiones relajadas
+
+# Run with "include TSP_full.run;"
+
+##################
+# Reiniciamos 
+##################
+#
+reset;
+reset;
+#
+###
+
+########################
+# Opciones del solver
+########################
+#
+#
+option reset_initial_guesses 1; 									 # que no transmita la solución de un problema anterior
+																	 # como punto de inicio para el siguiente
+
+option omit_zero_rows 1; 											 # Estetico: no mostrar valores nulos.
+
+option show_stats 1; 												 # Indicamos a AMPL que devuelva el número de 
+																	 #   - variables (_nvars)
+																	 #   - restricciones (_cons)
+
+option presolve 0;													 # Deshabilitamos el presolver de AMPL
+ 
+option solver gurobi;												 # elegimos gurobi como solver
+
+option gurobi_options 'presolve=0 timelim=300 bestbound=1 outlev=0'; # deshabilitamos el presolver de gurobi; 
+																	 # tiempo máximo de ejecucción: 300 segundos
+																	 # Indicamos que devuelva la mejor cota (LB)
+																	 # Indicamos el nivel de verbosidad a 0
+#
+#
+####
+
+##########################################
+# Inicializamos el primer modelo (TSP-SCF)
+##########################################
+#
+model TSP_SCF.mod;
+
+data instancia_TSP.dat;
+#
+#
+####
+
+###############################################
+# Guardado de datos para representación gráfica
+###############################################
+## Grafo
+printf "# GRAFO\n" > grafo.txt;
+
+for {(i,j) in LINKS} {
+    printf "%d %d %f\n", i, j, COST[i,j] >> grafo.txt;
+}
+#
+#
+#######
+
+#############################
+# Resolución mediante TSP-SCF
+#############################
+# (1): Guardamos la solución en el archivo TSP_SCF_out.txt
+#		- Aristas usadas (x = 1)
+#		- Métricas: 
+#			- _solve_elapsed_time
+#			- Total_Cost
+#			- Lower Bound (Total_Cost.bestbound
+#			- gap ((Total_Cost-(Total_Cost.bestbound))/Total_Cost)
+#
+# (2): Mostramos por pantalla:
+#		- _solve_elapse_time
+#		- Lower Bound (LB)
+#		- Upper Bound (UB)
+#		- gap
+#
+# (3): Formateo de tablas para la introducción directa en LaTeX
+#	
+# (4): resolución del problema relajado
+#		- Mostramos por pantalla
+#			- _solve_elapse_time 
+#			- Lower Bound (LB)
+#			- Upper Bound (UB)
+#			- gap
+#			
+printf"\n#######################################";
+printf"\n###### Resolviendo TSP mediante TSP-SCF";
+printf"\n#######################################";
+
+solve;
+
+# (1) Guardamos la solución en el archivo TSP_SCF_out.txt
+#########################################################
+
+printf "# SOLUCION\n" > TSP_SCF_out.txt;
+for {(i,j) in LINKS: x[i,j] > 0.5} {
+    printf "%d %d\n", i, j >> TSP_SCF_out.txt;
+}
+printf "# METRICAS\n" >> TSP_SCF_out.txt;
+printf "solve_time %f\n", _solve_elapsed_time >> TSP_SCF_out.txt;
+printf "obj %f\n", Total_Cost >> TSP_SCF_out.txt;
+printf "bestbound %f\n", Total_Cost.bestbound >> TSP_SCF_out.txt;
+printf "gap %f\n",
+    (Total_Cost-(Total_Cost.bestbound))/Total_Cost >> TSP_SCF_out.txt;
+
+########
+
+# (2) Mostramos por pantalla
+############################
+printf "\n# Solve time: %6.2f\n", _solve_elapsed_time; # Elapsed Time
+
+# Cotas inferiores y superiores por pantalla
+printf "# LB=%6.2f, \t UB=%6.2f, \t relative gap=%6.4f\n\n",
+Total_Cost.bestbound,
+Total_Cost,
+(Total_Cost-(Total_Cost.bestbound))/Total_Cost;
+
+########
+
+# (3) Formateo de tablas para la introducción directa en LaTeX
+###############################################################
+
+printf "Formulación & $n^{\\text{\\underline o}}$ Variables & $n^{\\text{\\underline o}}$ Restricciones & \\textit{Lower Bound} & \\textit{Gap} & Tiempo\\\\ \n \\hline \\hline\n" > tablas_latex.txt;
+# Formateo para extraer las tablas a formato latex:
+# Formulación | número de variables | número de restricciones | Lower Bound | Gap | Tiempo de resolución 
+printf "TSP-SCF & $%i$ & $%i$ & %6.2f & $%6.4f$ & $%6.3f$ seg. \\\\ \n",
+ _nvars, _ncons, Total_Cost.bestbound, (Total_Cost-(Total_Cost.bestbound))/Total_Cost, _solve_elapsed_time >> tablas_latex.txt;
+
+## 
+# _nvars: número de variables del último problema resuleto
+# _ncons: número de restricciones
+
+
+# tabla formateada apara introducir en latex con todos los valores de los problemas relajados
+printf "Formulación & \\textit{Lower Bound} de la relajación & Fuerza teórica \\\\ \n" > tabla_latex_2.txt;
+
+########
+
+# (4) Resolución del problema relajado
+#######################################
+reset; 
+
+option solver gurobi;
+option gurobi_options 'presolve=0 timelim=300 bestbound=1 outlev=0';
+
+model TSP_SCF_relajado.mod;
+
+data instancia_TSP.dat;
+
+solve;
+
+printf "###### Resolviendo TSP mediante TSP-SCF relajado";
+
+printf "\n# Solve time: %6.2f\n", _solve_elapsed_time; # Elapsed Time
+
+# Cotas inferiores y superiores por pantalla
+printf "# LB=%6.2f, \t UB=%6.2f, \t relative gap=%6.4f\n\n",
+Total_Cost.bestbound,
+Total_Cost,
+(Total_Cost-(Total_Cost.bestbound))/Total_Cost;
+
+printf "TSP-SCF &  $%6.2f$ & intermedia \\\\ \n", Total_Cost >> tabla_latex_2.txt;
+
+########
+
+#############################
+# Resolución mediante TSP-MCF
+#############################
+# (1): Guardamos la solución en el archivo TSP_MCF_out.txt
+#		- Aristas usadas (x = 1)
+#		- Métricas: 
+#			- _solve_elapsed_time
+#			- Total_Cost
+#			- Lower Bound (Total_Cost.bestbound
+#			- gap ((Total_Cost-(Total_Cost.bestbound))/Total_Cost)
+#
+# (2): Mostramos por pantalla:
+#		- _solve_elapse_time
+#		- Lower Bound (LB)
+#		- Upper Bound (UB)
+#		- gap
+#
+# (3): Formateo de tablas para la introducción directa en LaTeX
+#	
+# (4): resolución del problema relajado
+#		- Mostramos por pantalla
+#			- _solve_elapse_time 
+#			- Lower Bound (LB)
+#			- Upper Bound (UB)
+#			- gap
+#	
+printf"\n#######################################";
+printf"\n###### Resolviendo TSP mediante TSP-MCF";
+printf"\n#######################################";
+
+reset;
+
+option solver gurobi;
+option gurobi_options 'presolve=0 timelim=300 bestbound=1 outlev=0';
+
+model TSP_MCF.mod;
+
+data instancia_TSP.dat;
+
+solve;
+
+# (1) Guardamos la solución en el archivo TSP_MCF_out.txt
+#########################################################
+
+printf "# SOLUCION\n" > TSP_MCF_out.txt;
+for {(i,j) in LINKS: x[i,j] > 0.5} {
+    printf "%d %d\n", i, j >> TSP_MCF_out.txt;
+}
+printf "# METRICAS\n" >> TSP_MCF_out.txt;
+printf "solve_time %f\n", _solve_elapsed_time >> TSP_MCF_out.txt;
+printf "obj %f\n", Total_Cost >> TSP_MCF_out.txt;
+printf "bestbound %f\n", Total_Cost.bestbound >> TSP_MCF_out.txt;
+printf "gap %f\n",
+    (Total_Cost-(Total_Cost.bestbound))/Total_Cost >> TSP_MCF_out.txt;
+
+########
+
+# (2) Mostramos por pantalla
+############################
+printf "\n# Solve time: %6.2f\n", _solve_elapsed_time; # Elapsed Time
+
+# Cotas inferiores y superiores por pantalla
+printf "# LB=%6.2f, \t UB=%6.2f, \t relative gap=%6.4f\n\n",
+Total_Cost.bestbound,
+Total_Cost,
+(Total_Cost-(Total_Cost.bestbound))/Total_Cost;
+
+########
+
+# (3) Formateo de tablas para la introducción directa en LaTeX
+###############################################################
+printf "TSP-MCF & $%i$ & $%i$ & %6.2f & $%6.4f$ & $%6.3f$ seg. \\\\ \n",
+ _nvars, _ncons, Total_Cost.bestbound, (Total_Cost-(Total_Cost.bestbound))/Total_Cost, _solve_elapsed_time >> tablas_latex.txt;
+
+
+
+# (4) Resolución del problema relajado
+########################################
+
+reset; 
+
+option solver gurobi;
+option gurobi_options 'presolve=0 timelim=300 bestbound=1 outlev=0';
+
+model TSP_MCF_relajado.mod;
+
+data instancia_TSP.dat;
+
+solve;
+
+printf "###### Resolviendo TSP mediante TSP-MCF relajado";
+
+printf "\n# Solve time: %6.2f\n", _solve_elapsed_time; # Elapsed Time
+
+# Cotas inferiores y superiores por pantalla
+printf "# LB=%6.2f, \t UB=%6.2f, \t relative gap=%6.4f\n\n",
+Total_Cost.bestbound,
+Total_Cost,
+(Total_Cost-(Total_Cost.bestbound))/Total_Cost;
+
+printf "TSP-MCF &  $%6.2f$ & intermedia \\\\ \n", Total_Cost >> tabla_latex_2.txt;
+
+######
+
+#############################
+# Resolución mediante TSP-TS
+#############################
+# (1): Guardamos la solución en el archivo TSP_TS_out.txt
+#		- Aristas usadas en cada etapa
+#		- Métricas: 
+#			- _solve_elapsed_time
+#			- Total_Cost
+#			- Lower Bound (Total_Cost.bestbound
+#			- gap ((Total_Cost-(Total_Cost.bestbound))/Total_Cost)
+#
+# (2): Mostramos por pantalla:
+#		- _solve_elapse_time
+#		- Lower Bound (LB)
+#		- Upper Bound (UB)
+#		- gap
+#
+# (3): Formateo de tablas para la introducción directa en LaTeX
+#	
+# (4): resolución del problema relajado
+#		- Mostramos por pantalla
+#			- _solve_elapse_time 
+#			- Lower Bound (LB)
+#			- Upper Bound (UB)
+#			- gap
+#	
+printf"\n######################################";
+printf"\n###### Resolviendo TSP mediante TSP-TS";
+printf"\n######################################";
+
+reset;
+
+option solver gurobi;
+option gurobi_options 'presolve=0 timelim=300 bestbound=1 outlev=0';
+
+model TSP_TS.mod;
+
+data instancia_TSP.dat;
+
+solve;
+
+# (1) Guardamos la solución en el archivo TSP_TS_out.txt
+#########################################################
+
+printf "# SOLUCION\n" > TSP_TS_out.txt;
+for {k in 1..n,(i,j) in LINKS: r[k,i,j] > 0.5} {
+    printf "%d %d\n", i, j >> TSP_TS_out.txt;
+}
+printf "# METRICAS\n" >> TSP_TS_out.txt;
+printf "solve_time %f\n", _solve_elapsed_time >> TSP_TS_out.txt;
+printf "obj %f\n", Total_Cost >> TSP_TS_out.txt;
+printf "bestbound %f\n", Total_Cost.bestbound >> TSP_TS_out.txt;
+printf "gap %f\n",
+    (Total_Cost-(Total_Cost.bestbound))/Total_Cost >> TSP_TS_out.txt;
+
+########
+
+# (2) Mostramos por pantalla
+############################
+printf "\n# Solve time: %6.2f\n", _solve_elapsed_time; # Elapsed Time
+
+printf "# LB=%6.2f, \t UB=%6.2f, \t relative gap=%6.4f\n\n",
+Total_Cost.bestbound,
+Total_Cost,
+(Total_Cost-(Total_Cost.bestbound))/Total_Cost;
+
+########
+
+# (3) Formateo de tablas para la introducción directa en LaTeX
+###############################################################
+
+printf "TSP-TS & $%i$ & $%i$ & %6.2f & $%6.4f$ & $%6.3f$ seg. \\\\ \n",
+ _nvars, _ncons, Total_Cost.bestbound, (Total_Cost-(Total_Cost.bestbound))/Total_Cost, _solve_elapsed_time >> tablas_latex.txt;
+
+#(4) Resolución del problema relajado
+######################################
+
+reset; 
+
+option solver gurobi;
+option gurobi_options 'presolve=0 timelim=300 bestbound=1 outlev=0';
+
+model TSP_TS_relajado.mod;
+
+data instancia_TSP.dat;
+
+solve;
+
+printf "###### Resolviendo TSP mediante TSP-TS relajado";
+
+printf "\n# Solve time: %6.2f\n", _solve_elapsed_time; # Elapsed Time
+
+# Cotas inferiores y superiores por pantalla
+printf "# LB=%6.2f, \t UB=%6.2f, \t relative gap=%6.4f\n\n",
+Total_Cost.bestbound,
+Total_Cost,
+(Total_Cost-(Total_Cost.bestbound))/Total_Cost;
+
+printf "TSP-TS &  $%6.2f$ & intermedia \\\\ \n", Total_Cost >> tabla_latex_2.txt;
+
+#######
+
+#############################
+# Resolución mediante TSP-DFJ
+#############################
+# (1): Guardamos la solución en el archivo TSP_DFJ_out.txt
+#		- Aristas usadas (x = 1)
+#		- Métricas: 
+#			- _solve_elapsed_time
+#			- Total_Cost
+#			- Lower Bound (Total_Cost.bestbound
+#			- gap ((Total_Cost-(Total_Cost.bestbound))/Total_Cost)
+#
+# (2): Mostramos por pantalla:
+#		- _solve_elapse_time
+#		- Lower Bound (LB)
+#		- Upper Bound (UB)
+#		- gap
+#
+# (3): Formateo de tablas para la introducción directa en LaTeX
+#	
+# (4): resolución del problema relajado
+#		- Mostramos por pantalla
+#			- _solve_elapse_time 
+#			- Lower Bound (LB)
+#			- Upper Bound (UB)
+#			- gap
+#	
+printf"\n#######################################";
+printf"\n###### Resolviendo TSP mediante TSP-DFJ";
+printf"\n#######################################";
+
+reset;
+
+option solver gurobi;
+option gurobi_options 'presolve=0 timelim=300 bestbound=1 outlev=0';
+
+model TSP_DFJ.mod;
+
+data instancia_TSP.dat;
+
+solve;
+
+# (1) Guardamos la solución en el archivo TSP_DFJ_out.txt
+##################################
+
+printf "# SOLUCION\n" > TSP_DFJ_out.txt;
+for {(i,j) in LINKS: x[i,j] > 0.5} {
+    printf "%d %d\n", i, j >> TSP_DFJ_out.txt;
+}
+printf "# METRICAS\n" >> TSP_DFJ_out.txt;
+printf "solve_time %f\n", _solve_elapsed_time >> TSP_DFJ_out.txt;
+printf "obj %f\n", Total_Cost >> TSP_DFJ_out.txt;
+printf "bestbound %f\n", Total_Cost.bestbound >> TSP_DFJ_out.txt;
+printf "gap %f\n",
+    (Total_Cost-(Total_Cost.bestbound))/Total_Cost >> TSP_DFJ_out.txt;
+
+
+########
+
+# (2) Mostramos por pantalla
+############################
+
+printf "\n# Solve time: %6.2f\n", _solve_elapsed_time; # Elapsed Time
+
+# Cotas inferiores y superiores
+printf "# LB=%6.2f, \t UB=%6.2f, \t relative gap=%6.4f\n\n",
+Total_Cost.bestbound,
+Total_Cost,
+(Total_Cost-(Total_Cost.bestbound))/Total_Cost;
+
+
+# (3) Formateo de tablas para la introducción directa en LaTeX
+###############################################################
+
+
+printf "TSP-DFJ & $%i$ & $%i$ & %6.2f & $%6.4f$ & $%6.3f$ seg. \\\\ \n",
+ _nvars, _ncons, Total_Cost.bestbound, (Total_Cost-(Total_Cost.bestbound))/Total_Cost, _solve_elapsed_time >> tablas_latex.txt;
+
+ 
+# (4) Resolución del problema relajado
+###################################
+reset; 
+
+option solver gurobi;
+option gurobi_options 'presolve=0 timelim=300 bestbound=1 outlev=0';
+
+model TSP_DFJ_relajado.mod;
+
+data instancia_TSP.dat;
+
+solve;
+
+printf "###### Resolviendo TSP mediante TSP-DFJ relajado";
+
+printf "\n# Solve time: %6.2f\n", _solve_elapsed_time; # Elapsed Time
+
+# Cotas inferiores y superiores por pantalla
+printf "# LB=%6.2f, \t UB=%6.2f, \t relative gap=%6.4f\n\n",
+Total_Cost.bestbound,
+Total_Cost,
+(Total_Cost-(Total_Cost.bestbound))/Total_Cost;
+
+printf "TSP-DFJ &  $%6.2f$ & intermedia \\\\ \n", Total_Cost >> tabla_latex_2.txt;

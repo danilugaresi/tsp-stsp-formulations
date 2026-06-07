@@ -1,0 +1,5 @@
+# SOLUCION
+# METRICAS
+solve_time 318.360000
+obj 0.000000
+bestbound 0.000000

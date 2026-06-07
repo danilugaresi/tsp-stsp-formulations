@@ -1,0 +1,15 @@
+# SOLUCION
+1 2
+2 3
+3 5
+5 15
+15 8
+8 7
+7 14
+14 19
+19 1
+# METRICAS
+solve_time 2.156000
+obj 61.000000
+bestbound 61.000000
+gap 0.000000

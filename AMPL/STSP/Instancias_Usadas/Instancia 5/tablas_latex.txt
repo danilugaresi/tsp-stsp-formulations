@@ -1,0 +1,3 @@
+Formulación & $n^{\text{\underline o}}$ Variables & $n^{\text{\underline o}}$ Restricciones & \textit{Lower Bound} & \textit{Gap} & Tiempo\\ 
+ \hline \hline
+STSP-SCF & $9632$ & $6424$ & 153.00 & $0.0000$ & $ 4.672$ seg. \\ 

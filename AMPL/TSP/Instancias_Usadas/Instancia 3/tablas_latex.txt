@@ -1,0 +1,5 @@
+Formulación & $n^{\text{\underline o}}$ Variables & $n^{\text{\underline o}}$ Restricciones & \textit{Lower Bound} & \textit{Gap} & Tiempo\\ 
+ \hline \hline
+TSP-SCF & $7080$ & $3720$ & 150.09 & $0.0000$ & $ 1.109$ seg. \\ 
+TSP-MCF & $215940$ & $212520$ & 150.09 & $0.0000$ & $61.000$ seg. \\ 
+TSP-TS & $212400$ & $3543$ & 150.09 & $0.0000$ & $161.016$ seg. \\ 
