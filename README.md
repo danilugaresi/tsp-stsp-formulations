@@ -39,5 +39,3 @@ Different formulations are implemented and tested using mathematical programming
 This repository contains material from a group academic project developed collaboratively by:
 - Daniel Lugaresi Palomares
 - Iker Rodríguez Rodríguez
-## Disclaimer
-This repository is intended for educational and academic purposes. The work was carried out as part of a university project and is shared to showcase the methodology, implementation, and results obtained during the project.
