@@ -1,5 +1,8 @@
 # Análisis de distintas formulaciones de los problemas TSP y STSP
-Análisis y comparación computacional de distintas formulaciones matemáticas para el problema del viajante (TSP, Travelling Salesman Problem) y el problema del viajante de Steiner (STSP, Steiner Travelling Salesman Problem).
+Análisis y comparación computacional de distintas formulaciones matemáticas para el problema del viajante (TSP, Travelling Salesman Problem) y el problema del viajante de Steiner (STSP, Steiner Travelling Salesman Problem). Proyecto desarrollado colaborativamente por:
+
+- Daniel Lugaresi Palomares
+- Iker Rodríguez Rodríguez
 ## Descripción
 Para el TSP se analizan las formulaciones DFJ, Single Commodity Flow (SCF), Multi Commodity Flow (MCF) y Time-Staged (TS). Para el STSP se estudia la formulación de Fleischmann, así como las formulaciones SCF y TS.
 
@@ -36,7 +39,4 @@ Las distintas formulaciones se implementan y evalúan utilizando herramientas de
 ├── Report.pdf
 └── README.md
 ```
-## Equipo
-Este repositorio contiene material procedente de un proyecto académico desarrollado de forma colaborativa por:
-- Daniel Lugaresi Palomares
-- Iker Rodríguez Rodríguez
+
