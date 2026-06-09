@@ -1,24 +1,25 @@
 # Análisis de distintas formulaciones de los problemas TSP y STSP
-Analysis and computational comparison of different mathematical formulations for the TSP (Travelling Salesman Problem) and STSP (Steiner Travelling Salesman Problem).
-## Overview
-This project studies several mathematical formulations for the Traveling Salesman Problem (TSP) and the Steiner Traveling Salesman Problem (STSP). For the TSP, we analyze the DFJ, Single Commodity Flow (SCF), Multi Commodity Flow (MCF), and Time-Staged (TS) formulations. For the STSP, we study the Fleischmann's formulation, SCF and TS formulation. The comparison focuses on theoretical properties, model size, linear relaxation strength, and computational performance through numerical experiments implemented in AMPL.
+Análisis y comparación computacional de distintas formulaciones matemáticas para el problema del viajante (TSP, Travelling Salesman Problem) y el problema del viajante de Steiner (STSP, Steiner Travelling Salesman Problem).
+## Descripción
+Para el TSP se analizan las formulaciones DFJ, Single Commodity Flow (SCF), Multi Commodity Flow (MCF) y Time-Staged (TS). Para el STSP se estudia la formulación de Fleischmann, así como las formulaciones SCF y TS.
 
-Different formulations are implemented and tested using mathematical programming tools, allowing a detailed analysis of solution quality, computational efficiency, and scalability.
-## Contents
-- Introduction
-- TSP: Definition and Formulations.
-- STSP: Definition and Formulations.
-- Computational Study
-- Comparative Analysis of Results.
-- Conclusions.
-- References.
-## Tools
-- **AMPL**: Mathematical programming and implementation of TSP and STSP formulations.
-- **Gurobi**: Solution of the resulting mixed-integer linear programs.
-- **Python**: Visualization of network instances and optimal tours.
-- **R**: Generation of random problem instances and computational experiments.
-## Repository Structure
+La comparación se centra en las propiedades teóricas de cada modelo, su tamaño, la calidad de sus relajaciones lineales y su rendimiento computacional mediante un análisis computacional realizado a partir de la implementación en AMPL de cada formulación, generando instancias aleatorias con R.
 
+Las distintas formulaciones se implementan y evalúan utilizando herramientas de programación matemática, lo que permite realizar un análisis detallado de la calidad de las soluciones obtenidas, la eficiencia computacional y la escalabilidad de cada enfoque.
+## Contenidos
+* Introducción
+* TSP: definición y formulaciones
+* STSP: definición y formulaciones
+* Estudio computacional
+* Análisis comparativo de resultados
+* Conclusiones
+* Referencias
+## Herramientas
+* **AMPL**: programación matemática e implementación de las formulaciones del TSP y STSP.
+* **Gurobi**: resolución de los problemas de programación lineal entera mixta resultantes.
+* **Python**: visualización de instancias de red y recorridos óptimos.
+* **R**: generación de instancias aleatorias y realización de experimentos computacionales.
+## Estructura del repositorio
 ```text
 .
 ├── AMPL/
@@ -35,7 +36,7 @@ Different formulations are implemented and tested using mathematical programming
 ├── Report.pdf
 └── README.md
 ```
-## Team
-This repository contains material from a group academic project developed collaboratively by:
+## Equipo
+Este repositorio contiene material procedente de un proyecto académico desarrollado de forma colaborativa por:
 - Daniel Lugaresi Palomares
 - Iker Rodríguez Rodríguez
