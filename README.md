@@ -1,5 +1,5 @@
 # Análisis de distintas formulaciones de los problemas TSP y STSP
-Análisis y comparación computacional de distintas formulaciones matemáticas para el problema del viajante (TSP, Travelling Salesman Problem) y el problema del viajante de Steiner (STSP, Steiner Travelling Salesman Problem). Proyecto desarrollado colaborativamente por:
+Análisis y comparación computacional de distintas formulaciones matemáticas para el problema del viajante (TSP, Travelling Salesman Problem) y el problema del viajante de Steiner (STSP, Steiner Travelling Salesman Problem). Proyecto desarrollado de forma colaborativa y publicado con el consentimiento expreso de todos sus autores:
 
 - Daniel Lugaresi Palomares
 - Iker Rodríguez Rodríguez
